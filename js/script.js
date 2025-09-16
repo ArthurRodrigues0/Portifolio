@@ -4,11 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
-    const addProjectBtn = document.getElementById('addProjectBtn');
-    const addProjectModal = document.getElementById('addProjectModal');
-    const closeModal = document.querySelector('.close');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const addProjectForm = document.getElementById('addProjectForm');
     const contactForm = document.getElementById('contactForm');
     const projectsGrid = document.querySelector('.projects-grid');
 
@@ -64,93 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Modal para adicionar projeto
-    addProjectBtn.addEventListener('click', function() {
-        addProjectModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    });
 
-    closeModal.addEventListener('click', function() {
-        addProjectModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        addProjectForm.reset();
-    });
-
-    cancelBtn.addEventListener('click', function() {
-        addProjectModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        addProjectForm.reset();
-    });
-
-    // Fechar modal ao clicar fora dele
-    window.addEventListener('click', function(e) {
-        if (e.target === addProjectModal) {
-            addProjectModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            addProjectForm.reset();
-        }
-    });
-
-    // Adicionar novo projeto
-    addProjectForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const projectData = {
-            title: formData.get('title'),
-            description: formData.get('description'),
-            image: formData.get('image') || 'https://via.placeholder.com/400x200?text=Projeto',
-            demo: formData.get('demo'),
-            github: formData.get('github'),
-            technologies: formData.get('technologies').split(',').map(tech => tech.trim())
-        };
-
-        createProjectCard(projectData);
-        
-        // Fechar modal e resetar formulário
-        addProjectModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        this.reset();
-        
-        // Mostrar mensagem de sucesso
-        showNotification('Projeto adicionado com sucesso!', 'success');
-    });
-
-    // Criar card de projeto
-    function createProjectCard(project) {
-        const projectCard = document.createElement('div');
-        projectCard.className = 'project-card fade-in';
-        
-        projectCard.innerHTML = `
-            <div class="project-image">
-                <img src="${project.image}" alt="${project.title}" onerror="this.src='https://via.placeholder.com/400x200?text=Projeto'">
-                <div class="project-overlay">
-                    <div class="project-links">
-                        ${project.demo ? `<a href="${project.demo}" class="project-link" target="_blank">
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>` : ''}
-                        ${project.github ? `<a href="${project.github}" class="project-link" target="_blank">
-                            <i class="fab fa-github"></i>
-                        </a>` : ''}
-                    </div>
-                </div>
-            </div>
-            <div class="project-info">
-                <h3>${project.title}</h3>
-                <p>${project.description}</p>
-                <div class="project-tech">
-                    ${project.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
-                </div>
-            </div>
-        `;
-
-        projectsGrid.appendChild(projectCard);
-        
-        // Animar entrada do novo card
-        setTimeout(() => {
-            projectCard.classList.add('visible');
-        }, 100);
-    }
 
     // Inicializar EmailJS
     emailjs.init("W6n4uUF_2oA1CD9Kg");
@@ -407,56 +316,6 @@ document.addEventListener('DOMContentLoaded', function() {
     images.forEach(img => {
         imageObserver.observe(img);
     });
-
-    // Função para salvar projetos no localStorage
-    function saveProjects() {
-        const projects = [];
-        const projectCards = document.querySelectorAll('.project-card');
-        
-        projectCards.forEach(card => {
-            const title = card.querySelector('h3').textContent;
-            const description = card.querySelector('p').textContent;
-            const image = card.querySelector('img').src;
-            const techTags = Array.from(card.querySelectorAll('.tech-tag')).map(tag => tag.textContent);
-            const links = Array.from(card.querySelectorAll('.project-link')).map(link => link.href);
-            
-            projects.push({
-                title,
-                description,
-                image,
-                technologies: techTags,
-                demo: links.find(link => link.includes('http')) || '',
-                github: links.find(link => link.includes('github')) || ''
-            });
-        });
-        
-        localStorage.setItem('portfolioProjects', JSON.stringify(projects));
-    }
-
-    // Função para carregar projetos do localStorage
-    function loadProjects() {
-        const savedProjects = localStorage.getItem('portfolioProjects');
-        if (savedProjects) {
-            const projects = JSON.parse(savedProjects);
-            // Remover projetos padrão se existirem projetos salvos
-            if (projects.length > 3) {
-                projectsGrid.innerHTML = '';
-                projects.forEach(project => {
-                    createProjectCard(project);
-                });
-            }
-        }
-    }
-
-    // Carregar projetos salvos ao inicializar
-    loadProjects();
-
-    // Salvar projetos sempre que um novo for adicionado
-    const originalCreateProjectCard = createProjectCard;
-    createProjectCard = function(project) {
-        originalCreateProjectCard(project);
-        saveProjects();
-    };
 
     console.log('Portfólio carregado com sucesso! 🚀');
 });
