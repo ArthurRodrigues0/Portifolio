@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Inicializar EmailJS - Substitua "YOUR_PUBLIC_KEY" pela sua chave pública do EmailJS
-    emailjs.init("YOUR_PUBLIC_KEY");
+  emailjs.init(S_5YXzmq9AtIUOFdb);
 
     // Formulário de contato
     contactForm.addEventListener('submit', function(e) {
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Enviar via EmailJS - Substitua "YOUR_SERVICE_ID" pelo ID do seu serviço e "YOUR_TEMPLATE_ID" pelo ID do template
         // O template deve ser configurado no EmailJS para enviar para arthurrodrigueschaves0314@gmail.com
-        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+        emailjs.sendForm(service_ods88l6, template_rwtvw02, this)
             .then(function(response) {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
                 showNotification('Mensagem enviada com sucesso! Entrarei em contato em breve.', 'success');
@@ -461,3 +461,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('Portfólio carregado com sucesso! 🚀');
 });
+
