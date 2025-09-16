@@ -152,44 +152,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
+    // Inicializar EmailJS - Substitua "YOUR_PUBLIC_KEY" pela sua chave pública do EmailJS
+    emailjs.init("YOUR_PUBLIC_KEY");
+
     // Formulário de contato
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const formData = new FormData(this);
-        const contactData = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            subject: formData.get('subject'),
-            message: formData.get('message')
-        };
-
-        // Simular envio do formulário
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         submitBtn.disabled = true;
 
-        setTimeout(() => {
-            submitBtn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
-            showNotification('Mensagem enviada com sucesso! Entrarei em contato em breve.', 'success');
-            
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                contactForm.reset();
-            }, 2000);
-        }, 2000);
+        // Enviar via EmailJS - Substitua "YOUR_SERVICE_ID" pelo ID do seu serviço e "YOUR_TEMPLATE_ID" pelo ID do template
+        // O template deve ser configurado no EmailJS para enviar para arthurrodrigueschaves0314@gmail.com
+        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+            .then(function(response) {
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
+                showNotification('Mensagem enviada com sucesso! Entrarei em contato em breve.', 'success');
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    contactForm.reset();
+                }, 2000);
+            }, function(error) {
+                console.error('Erro ao enviar email:', error);
+                submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro!';
+                showNotification('Erro ao enviar mensagem. Tente novamente.', 'error');
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 2000);
+            });
     });
 
     // Sistema de notificações
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
+        const iconClass = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+                <i class="fas ${iconClass}"></i>
                 <span>${message}</span>
             </div>
         `;
@@ -217,6 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     border-left-color: #28a745;
                 }
                 
+                .notification-error {
+                    border-left-color: #dc3545;
+                }
+                
                 .notification.show {
                     transform: translateX(0);
                 }
@@ -233,6 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 .notification-success .notification-content i {
                     color: #28a745;
+                }
+                
+                .notification-error .notification-content i {
+                    color: #dc3545;
                 }
             `;
             document.head.appendChild(styles);
